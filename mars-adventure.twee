@@ -1,0 +1,78 @@
+:: StoryTitle
+Red Horizon
+
+:: StoryData
+{
+  "ifid": "8d20a974-df4d-4c8f-a2ea-206e69db59ed",
+  "format": "Harlowe",
+  "format-version": "3.3.9",
+  "start": "Mission Control"
+}
+
+:: Mission Control
+Earth is a blue marble in the window of the *Asteria*. In six hours, you will be the first human to set foot on Mars. Mission Control crackles in your headset: “Your call, Commander. What do you check before entry?”
+
+[[Inspect the landing systems->Landing Systems]]
+[[Check the weather from orbit->Orbital Weather]]
+
+:: Landing Systems
+The descent engine passes its test, but the landing radar gives an intermittent reading. Your engineer can reroute power from the communications array, or you can trust the backup radar and keep every system online.
+
+[[Reroute power to the landing radar->Powered Descent]]
+[[Keep the backup radar and all communications->Backup Descent]]
+
+:: Orbital Weather
+A red plume curls across the landing zone. The storm will reach the surface before you do. You can wait in orbit for clearer skies, or try a narrow gap in the clouds.
+
+[[Wait for the storm to pass->Storm Wait]]
+[[Descend through the gap->Backup Descent]]
+
+:: Powered Descent
+The radar steadies. The *Asteria* drops through the thin atmosphere, engines glowing against the rust-red ground. Touchdown is hard, but the craft is upright and the radio is quiet.
+
+[[Step onto Mars->First Footprint]]
+[[Check the radio and beacon first->Beacon Check]]
+
+:: Backup Descent
+The backup radar holds—until the storm turns the sky opaque. You have seconds to choose: steer toward the beacon's last known position or divert to a dark, flat plain.
+
+[[Follow the beacon->Beacon Check]]
+[[Divert to the plain->Plain Landing]]
+
+:: Storm Wait
+You circle Mars while the storm races beneath you. Hours later, the sky clears. You have enough fuel for one careful landing, but no margin for a second attempt.
+
+[[Land at the marked site->First Footprint]]
+[[Try the shorter route to the plain->Plain Landing]]
+
+:: Beacon Check
+The beacon answers with a faint pulse. You land beside the habitat, but dust has buried its solar panels. The crew can shelter safely; restoring power is the next challenge.
+
+[[Clear the panels and restore power->Habitat Restored]]
+[[Send the emergency signal from orbit->Rescue Signal]]
+
+:: Plain Landing
+The plain is smooth, but far from the habitat. The *Asteria* settles safely. A distant ridge hides the route to shelter, and your oxygen pack is already ticking down.
+
+[[Travel to the habitat before the storm returns->Habitat Restored]]
+[[Stay with the lander and raise the beacon->Rescue Signal]]
+
+:: First Footprint
+Your boot presses into the powdery soil. Mission Control cheers in your headset, then the habitat beacon flickers: the landing shook dust across its solar panels.
+
+[[Head to the habitat and clear the panels->Habitat Restored]]
+[[Return to the lander and signal for help->Rescue Signal]]
+
+:: Habitat Restored
+You brush the panels clean and the habitat lights come alive. Warm air, water, and a view of the Martian horizon: your first night on Mars will be spent at home.
+
+''Mission accomplished — the crew is safe on Mars.''
+
+[[Begin a new mission->Mission Control]]
+
+:: Rescue Signal
+The emergency beacon cuts through the storm. Mission Control confirms a rescue plan and guides you back to the lander. You are safe, but this mission's first landing will have to wait.
+
+''Mission paused — every explorer made it home safely.''
+
+[[Try the mission again->Mission Control]]
