@@ -1,0 +1,11 @@
+# macOS metadata
+.DS_Store
+**/.DS_Store
+
+# Twine-generated previews and backups
+Twine/Scratch/
+Twine/Backups/
+
+# Editor temporary files
+*.swp
+*~

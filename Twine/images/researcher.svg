@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title id="title">Researcher astronaut portrait</title>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#e5be57"/><stop offset="1" stop-color="#6f5b9f"/></linearGradient></defs>
+  <rect width="160" height="160" rx="80" fill="url(#bg)"/><circle cx="80" cy="62" r="37" fill="#182442" stroke="#e8f6ff" stroke-width="7"/><path d="M50 60c7-29 56-33 61 0" fill="#6c4136"/><circle cx="66" cy="66" r="4" fill="#e8f6ff"/><circle cx="94" cy="66" r="4" fill="#e8f6ff"/><path d="M68 82q12 8 24 0M34 148q6-48 46-48t46 48" fill="#b99743" stroke="#e8f6ff" stroke-width="6"/><path d="M65 112h30l-5 32H70Z" fill="none" stroke="#fff" stroke-width="4"/><circle cx="80" cy="128" r="6" fill="#8fffc1"/>
+</svg>

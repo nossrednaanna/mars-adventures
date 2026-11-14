@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title id="title">Engineer astronaut portrait</title>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f1a74d"/><stop offset="1" stop-color="#7f3f6b"/></linearGradient></defs>
+  <rect width="160" height="160" rx="80" fill="url(#bg)"/><circle cx="80" cy="64" r="38" fill="#182442" stroke="#d8efff" stroke-width="7"/><path d="M49 62c5-29 57-35 64 0" fill="#ffd08b"/><circle cx="66" cy="67" r="4" fill="#d8efff"/><circle cx="94" cy="67" r="4" fill="#d8efff"/><path d="M68 83q12 9 24 0M35 148q5-48 45-48t45 48" fill="#e18b3d" stroke="#d8efff" stroke-width="6"/><path d="M80 105v39M61 121h38" stroke="#472d55" stroke-width="7"/>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title id="title">Programer astronaut portrait</title>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#3db5d6"/><stop offset="1" stop-color="#6348a0"/></linearGradient></defs>
+  <rect width="160" height="160" rx="80" fill="url(#bg)"/><circle cx="80" cy="62" r="37" fill="#182442" stroke="#e8f6ff" stroke-width="7"/><path d="M50 60c4-30 57-35 61 0" fill="#24253b"/><circle cx="66" cy="66" r="4" fill="#e8f6ff"/><circle cx="94" cy="66" r="4" fill="#e8f6ff"/><path d="M68 82q12 8 24 0M34 148q6-48 46-48t46 48" fill="#3b7eb5" stroke="#e8f6ff" stroke-width="6"/><path d="m69 116-10 10 10 10m22-20 10 10-10 10m-6-24-10 29" fill="none" stroke="#fff" stroke-width="4"/>
+</svg>
