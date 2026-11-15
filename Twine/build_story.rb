@@ -2,12 +2,20 @@
 
 require "cgi"
 
-story_path = File.join(__dir__, "Stories", "testing.html")
+story_path = File.join(__dir__, "Stories", "Mars adventures .html")
 image_directory = File.expand_path("images", __dir__)
 local_image_base = "file://#{image_directory.gsub(" ", "%20")}" 
 
 css = <<~CSS
-  tw-story { background: #050914; color: #f5f7ff; font-family: system-ui, sans-serif; }
+  tw-story {
+    background-color: #050914;
+    background-image: linear-gradient(rgba(3, 6, 16, .68), rgba(3, 6, 16, .82)), url("#{local_image_base}/passage-background.png");
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    color: #f5f7ff;
+    font-family: system-ui, sans-serif;
+  }
   tw-passage { max-width: 1100px; padding: 0; }
   tw-link { color: #91c9ff; }
   tw-link:hover { color: #fff; }
@@ -27,6 +35,12 @@ css = <<~CSS
   .crew-status-role { display: block; overflow: hidden; color: #9db8d8; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
   .stardust-score { display: block; margin-top: .25rem; color: #ffe79b; font-size: .8rem; font-weight: 700; white-space: nowrap; }
   .stardust-input { display: block; width: min(100%, 32rem); margin-top: 1rem; padding: 1rem; border: 1px solid rgba(255,231,155,.4); border-radius: .75rem; background: rgba(44,35,69,.88); }
+  .mission-image { display: block; width: 100%; max-height: 31rem; margin: 1rem 0; border: 1px solid rgba(145,201,255,.28); border-radius: .85rem; object-fit: cover; }
+  .challenge-name { display: inline-block; margin-left: .5rem; padding: .2rem .5rem; border-radius: 999px; background: rgba(145,201,255,.14); }
+  .roll-equation { display: block; flex-basis: 100%; line-height: 1.8; }
+  .roll-equation strong { margin: 0 .18rem; color: #ffe79b; }
+  .stardust-roster { display: flex; flex-wrap: wrap; gap: .45rem; margin: .75rem 0; }
+  .stardust-member { padding: .35rem .55rem; border: 1px solid rgba(255,231,155,.32); border-radius: .5rem; background: rgba(10,20,42,.55); white-space: nowrap; }
   .choice-grid tw-link, .action-link tw-link { display: block; box-sizing: border-box; padding: .85rem 1rem; border: 1px solid rgba(145,201,255,.45); border-radius: .65rem; background: rgba(40,76,125,.35); }
   .choice-grid tw-link:hover, .action-link tw-link:hover { background: rgba(70,120,185,.48); }
   .schedule span { opacity: .55; }
@@ -49,6 +63,11 @@ passages = [
     (set: $morningFirstComplete to false, $middayFirstComplete to false, $eveningFirstComplete to false, $nightFirstComplete to false)
     (set: $morningSecondComplete to false, $middaySecondComplete to false, $eveningSecondComplete to false, $nightSecondComplete to false)
     (set: $morningDeepComplete to false, $middayDeepComplete to false, $eveningDeepComplete to false, $nightDeepComplete to false)
+    (set: $morningRewardGranted to false, $middayRewardGranted to false, $eveningRewardGranted to false, $nightRewardGranted to false)
+    (set: $morningEngineerParticipated to false, $morningResearcherParticipated to false, $morningMedicParticipated to false, $morningProgramerParticipated to false, $morningModelerParticipated to false, $morningElectricianParticipated to false, $morningPhysicistParticipated to false)
+    (set: $middayEngineerParticipated to false, $middayResearcherParticipated to false, $middayMedicParticipated to false, $middayProgramerParticipated to false, $middayModelerParticipated to false, $middayElectricianParticipated to false, $middayPhysicistParticipated to false)
+    (set: $eveningEngineerParticipated to false, $eveningResearcherParticipated to false, $eveningMedicParticipated to false, $eveningProgramerParticipated to false, $eveningModelerParticipated to false, $eveningElectricianParticipated to false, $eveningPhysicistParticipated to false)
+    (set: $nightEngineerParticipated to false, $nightResearcherParticipated to false, $nightMedicParticipated to false, $nightProgramerParticipated to false, $nightModelerParticipated to false, $nightElectricianParticipated to false, $nightPhysicistParticipated to false)
     (set: $missionStatus to "Approaching Mars")
     (set: $returnPassage to "Mars Approach")
 
@@ -205,45 +224,49 @@ passages = [
     [[Begin the morning mission->Morning Mission]]
   TWINE
   [5, "Morning Mission", "700,500", <<~'TWINE'],
-    (set: $day to 1, $stage to "Morning", $missionStatus to "Station operations")
+    (set: $day to 1, $stage to "Morning", $missionStatus to "Growing food")
     (set: $morningComplete to ($morningFirstComplete and $morningSecondComplete))
-    # Mission 1 — Morning
+    # Mission 1 — Growing food
 
     <div class="schedule"><span class="current">Morning</span><span>Midday</span><span>Evening</span><span>Night</span></div>
     <div class="hud"><span>MORALE: $morale</span><span>SUPPLIES: $supplies</span><span>POWER: $stationPower</span><span>DISCOVERIES: $discoveries</span></div>
 
-    All selected astronauts assemble in the entrance module. The morning mission is to restore life support and make the station safe enough to occupy.
+    <img class="mission-image" src="../images/mars-greenhouse.png" alt="An astronaut tending food crops inside a greenhouse on Mars">
 
-    (if: not $morningFirstComplete)[<div class="action-link">(link: "Choose a crew for life-support restoration")[(set: $challengeDestination to "Morning Challenge", $challengeTitle to "Restore life support")(go-to: "Select Challenge Crew")]</div>]
-    (if: false)[[Map route: life support->Morning Challenge]]
-    (if: not $morningSecondComplete)[<div class="action-link">(link: "Choose a crew for the water-recycler repair")[(set: $challengeDestination to "Morning Second Challenge", $challengeTitle to "Repair the water recycler")(go-to: "Select Challenge Crew")]</div>]
-    (if: false)[[Map route: water recycler->Morning Second Challenge]]
+    The crew must find out whether plants from Earth can survive on Mars. If they can, the greenhouse will provide fresh food and may also become a useful source of oxygen.
+
+    Build a greenhouse using soil, seeds, and plants brought from Earth. The crops need a reliable water supply, heating through the freezing Martian night, and fertiliser to keep the soil productive.
+
+    <div class="quest-card"><strong>MARS SCIENCE</strong><br>Mars' atmosphere contains a high concentration of carbon dioxide, which plants need for photosynthesis and growth, but its oxygen level is very low.<br><br>Plants release oxygen as a byproduct of photosynthesis, so a healthy greenhouse could help supply oxygen as well as food.</div>
+
+    (if: not $morningFirstComplete)[<div class="action-link">(link: "Challenge 1 — Clean the gardens")[(set: $challengeDestination to "Morning Challenge", $challengeTitle to "Clean the gardens", $challengeMission to "Morning")(go-to: "Select Challenge Crew")]</div>]
+    (if: false)[[Map route: clean the gardens->Morning Challenge]]
+    (if: not $morningSecondComplete)[<div class="action-link">(link: "Challenge 1.2 — Fungal pathogen")[(set: $challengeDestination to "Morning Second Challenge", $challengeTitle to "Stop the fungal pathogen", $challengeMission to "Morning")(go-to: "Select Challenge Crew")]</div>]
+    (if: false)[[Map route: fungal pathogen->Morning Second Challenge]]
+    (if: $morningComplete and not $morningRewardGranted)[(set: $rewardMission to "Morning")(display: "Apply Mission Stardust Reward")]
     (if: $morningComplete)[
       <div class="quest-card"><span class="success">Morning mission complete.</span> The team has returned to the mission hub.</div>
       [[Advance in time to the midday mission->Midday Mission]]
     ]
   TWINE
   [6, "Morning Challenge", "825,500", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to (max:1,$challengeCrewCount), $dc to 12)
-    (set: $total to $roll + $modifier, $morningFirstComplete to true)
-    # Morning challenge — Restore life support
+    (display: "Calculate Team Stardust")
+    (set: $usesD6Check to true, $roll to (random:1,6), $total to $roll, $morningFirstComplete to true)
+    # Challenge 1 — Clean the gardens
     (display: "Challenge Crew Display")
 
-    The whole team works through frozen ducts, damaged controls, and emergency medical checks.
+    Water the plants in the garden and pump more carbon dioxide into the greenhouse air so the plants can photosynthesise and do not wither and die.
 
-    <div class="roll-card">**Team check**<br>d20 **$roll** + teamwork **$modifier** = **$total** against DC **$dc**</div>
-
-    (if: $total >= $dc)[
-      (set: $stationPower to $stationPower + 2)
-      <span class="success">Life support stabilizes and two station sectors receive power.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "Life support is restored safely. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
+    (if: $roll is 6)[
+      (set: $discoveries to $discoveries + 1)
+      <span class="success">Exceptional success: the irrigation and airflow are perfectly balanced. The plants perk up, and the crew records useful greenhouse data.</span>
+    ]
+    (else-if: $roll >= 4)[
+      <span class="success">Success: the plants receive enough water and carbon dioxide to continue growing.</span>
     ]
     (else:)[
-      (set: $stationPower to $stationPower + 1, $supplies to (max:0,$supplies - 1))
-      <span class="warning">The system runs at minimum capacity and consumes one supply unit.</span>
-      (set: $teamStardustChange to -1, $teamStardustReason to "The dangerous repair exhausts the crew. Every participating astronaut loses 1 Stardust.")
-      (display: "Apply Team Stardust")
+      (set: $supplies to (max:0,$supplies - 1))
+      <span class="warning">Setback: uneven watering damages part of the crop and costs one supply, but the garden can still be saved.</span>
     ]
 
     **Challenge depth 1 of 2**
@@ -254,74 +277,81 @@ passages = [
     (display: "Stardust Input")
   TWINE
   [7, "Morning Follow-up", "950,500", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to $challengeCrewCount + $stationPower, $dc to 13)
-    (set: $total to $roll + $modifier, $morningDeepComplete to true)
-    # Morning follow-up — Trace the surge
+    (set: $roll to (random:1,6), $morningDeepComplete to true)
+    # Challenge 1.1 — The open greenhouse
     (display: "Challenge Crew Display")
 
-    The astronauts follow the surge below the power room. This is the deepest branch of the morning mission.
+    You forgot to close the side of the greenhouse overnight, exposing the plants to the freezing Martian cold. Roll the d6 to discover what happens.
 
-    <div class="roll-card">**Team check**<br>d20 **$roll** + systems **$modifier** = **$total** against DC **$dc**</div>
+    <div class="roll-card"><strong>d6 result: $roll</strong></div>
 
-    (if: $total >= $dc)[
-      (set: $discoveries to $discoveries + 1)
-      <span class="success">The team finds a hidden power conduit descending beneath the station.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "The discovery renews the team. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
+    (if: $roll is 1)[
+      (set: $supplies to (max:0,$supplies - 4))
+      (if: $takeEngineer)[(set: $engineerStardust to (max:0,$engineerStardust - 3))](if: $takeResearcher)[(set: $researcherStardust to (max:0,$researcherStardust - 3))](if: $takeMedic)[(set: $medicStardust to (max:0,$medicStardust - 3))](if: $takeProgramer)[(set: $programerStardust to (max:0,$programerStardust - 3))](if: $takeModeler)[(set: $modelerStardust to (max:0,$modelerStardust - 3))](if: $takeElectrician)[(set: $electricianStardust to (max:0,$electricianStardust - 3))](if: $takePhysicist)[(set: $physicistStardust to (max:0,$physicistStardust - 3))]
+      <span class="danger">All the plants and soil bacteria freeze to death. There is no fresh food and no way to grow more crops. Every team member loses 3 Stardust.</span>
+    ]
+    (else-if: $roll <= 3)[
+      (set: $supplies to (max:0,$supplies - 2))
+      (if: $takeEngineer)[(set: $engineerStardust to (max:0,$engineerStardust - 2))](if: $takeResearcher)[(set: $researcherStardust to (max:0,$researcherStardust - 2))](if: $takeMedic)[(set: $medicStardust to (max:0,$medicStardust - 2))](if: $takeProgramer)[(set: $programerStardust to (max:0,$programerStardust - 2))](if: $takeModeler)[(set: $modelerStardust to (max:0,$modelerStardust - 2))](if: $takeElectrician)[(set: $electricianStardust to (max:0,$electricianStardust - 2))](if: $takePhysicist)[(set: $physicistStardust to (max:0,$physicistStardust - 2))]
+      <span class="danger">All the plants and soil bacteria freeze, so there is no fresh food for now. Luckily, secure soil samples, bacteria, and seeds will let the crew restart the crop system, although fresh food is weeks away. Every team member loses 2 Stardust.</span>
+    ]
+    (else-if: $roll <= 5)[
+      (set: $supplies to (max:0,$supplies - 1), $leadRole to $challengeCrewRoles's 1st)
+      (if: $leadRole is "Engineer")[(set: $engineerStardust to (max:0,$engineerStardust - 1))](else-if: $leadRole is "Researcher")[(set: $researcherStardust to (max:0,$researcherStardust - 1))](else-if: $leadRole is "Medic")[(set: $medicStardust to (max:0,$medicStardust - 1))](else-if: $leadRole is "Programer")[(set: $programerStardust to (max:0,$programerStardust - 1))](else-if: $leadRole is "Modeler")[(set: $modelerStardust to (max:0,$modelerStardust - 1))](else-if: $leadRole is "Electrician")[(set: $electricianStardust to (max:0,$electricianStardust - 1))](else:)[(set: $physicistStardust to (max:0,$physicistStardust - 1))]
+      <span class="warning">An inner wall protects half the plants. The crew loses half the crop but can regrow it over time, and there is still a smaller amount of fresh food. The lead astronaut loses 1 Stardust.</span>
     ]
     (else:)[
-      (set: $morale to (max:0,$morale - 1))
-      <span class="warning">The surge disappears before it can be traced. Morale falls.</span>
-      (set: $teamStardustChange to -1, $teamStardustReason to "The failed search drains the team. Every participating astronaut loses 1 Stardust.")
-      (display: "Apply Team Stardust")
+      <span class="success">The temperature alarm wakes the crew as the greenhouse approaches freezing. The side is sealed in time and every plant is saved.</span>
     ]
 
     **Challenge depth 2 of 2 — no deeper challenge links.**
 
-    (set: $stardustReturn to "Morning Mission", $stardustFollowup to "")
-    (if: false)[[Map return->Morning Mission]]
-    (display: "Stardust Input")
+    [[Return to the growing-food mission->Morning Mission]]
   TWINE
   [8, "Midday Mission", "1075,500", <<~'TWINE'],
-    (set: $stage to "Midday")
+    (set: $stage to "Midday", $missionStatus to "Protecting the research station")
     (set: $middayComplete to ($middayFirstComplete and $middaySecondComplete))
-    # Mission 2 — Midday
+    # Mission 2 — Protect the research station
 
     <div class="schedule"><span>Morning</span><span class="current">Midday</span><span>Evening</span><span>Night</span></div>
     <div class="hud"><span>MORALE: $morale</span><span>SUPPLIES: $supplies</span><span>POWER: $stationPower</span><span>DISCOVERIES: $discoveries</span></div>
 
-    The full team begins a survey of the station's unexplored central level.
+    The Sun's radiation can harm the crew and damage equipment on Mars. The station must also be insulated against night-time temperatures that can fall to **−90°C**. Complete the work before night arrives so nobody has to remain outside in the extreme cold.
 
-    (if: not $middayFirstComplete)[<div class="action-link">(link: "Choose a crew for the central-level survey")[(set: $challengeDestination to "Midday Challenge", $challengeTitle to "Survey the central level")(go-to: "Select Challenge Crew")]</div>]
-    (if: false)[[Map route: central survey->Midday Challenge]]
-    (if: not $middaySecondComplete)[<div class="action-link">(link: "Choose a crew to inspect the sealed laboratory")[(set: $challengeDestination to "Midday Second Challenge", $challengeTitle to "Inspect the sealed laboratory")(go-to: "Select Challenge Crew")]</div>]
-    (if: false)[[Map route: sealed laboratory->Midday Second Challenge]]
+    <div class="quest-card"><strong>ENGINEERING IDEA</strong><br>Computers and other electrical equipment generate heat while they operate. Could the crew capture this waste heat and use it to warm the station at night?</div>
+
+    ## 2.1 — Secure the station
+
+    Fix or tighten every loose and broken part inside the station. This work can be completed indoors, away from the Sun's radiation.
+
+    (if: not $middayFirstComplete)[<div class="action-link">(link: "Secure the station")[(set: $challengeDestination to "Midday Challenge", $challengeTitle to "Secure the station", $challengeMission to "Midday")(go-to: "Select Challenge Crew")]</div>]
+    (if: false)[[Map route: secure the station->Midday Challenge]]
+    (if: not $middaySecondComplete)[<div class="action-link">(link: "Challenge 2.2 — Solar flare")[(set: $challengeDestination to "Midday Second Challenge", $challengeTitle to "Escape the solar flare", $challengeMission to "Midday")(go-to: "Select Challenge Crew")]</div>]
+    (if: false)[[Map route: solar flare->Midday Second Challenge]]
+    (if: $middayComplete and not $middayRewardGranted)[(set: $rewardMission to "Midday")(display: "Apply Mission Stardust Reward")]
     (if: $middayComplete)[
       <div class="quest-card"><span class="success">Midday mission complete.</span> The team has returned to the mission hub.</div>
       [[Advance in time to the evening mission->Evening Mission]]
     ]
   TWINE
   [9, "Midday Challenge", "1200,500", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to (max:1,$challengeCrewCount), $dc to 13)
-    (set: $total to $roll + $modifier, $middayFirstComplete to true)
-    # Midday challenge — Survey the central level
+    (display: "Calculate Team Stardust")
+    (set: $usesD6Check to true, $roll to (random:1,6), $total to $roll, $middayFirstComplete to true)
+    # Mission 2.1 — Secure the station
     (display: "Challenge Crew Display")
 
-    Together, the astronauts map unstable corridors, test the air, and recover fragments from the station archive.
+    Working safely inside, tighten loose fittings, repair broken panels, seal draughts, and connect the computers' waste-heat vents to the station's heating system.
 
-    <div class="roll-card">**Team check**<br>d20 **$roll** + teamwork **$modifier** = **$total** against DC **$dc**</div>
-
-    (if: $total >= $dc)[
-      (set: $discoveries to $discoveries + 1)
-      <span class="success">The survey reveals a sealed laboratory and a partial map.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "The successful survey inspires the team. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
+    (if: $roll is 6)[
+      (set: $stationPower to $stationPower + 1)
+      <span class="success">Exceptional success: the station is secure, and the crew successfully redirects waste heat from the computers to warm the habitat.</span>
+    ]
+    (else-if: $roll >= 4)[
+      <span class="success">Success: loose equipment is tightened, damaged panels are repaired, and the station is ready for the cold night.</span>
     ]
     (else:)[
       (set: $supplies to (max:0,$supplies - 1))
-      <span class="warning">A corridor collapse costs one supply unit, but the team completes the survey.</span>
-      (set: $teamStardustChange to -1, $teamStardustReason to "The corridor collapse injures and exhausts the team. Every participating astronaut loses 1 Stardust.")
-      (display: "Apply Team Stardust")
+      <span class="warning">Setback: a damaged interior seal requires an extra supply, but the crew secures the station.</span>
     ]
 
     **Challenge depth 1 of 2**
@@ -332,32 +362,33 @@ passages = [
     (display: "Stardust Input")
   TWINE
   [10, "Midday Follow-up", "1325,500", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to $challengeCrewCount + $discoveries, $dc to 14)
-    (set: $total to $roll + $modifier, $middayDeepComplete to true)
-    # Midday follow-up — Decode the map
+    (set: $roll to (random:1,6), $middayDeepComplete to true, $leadRole to $challengeCrewRoles's 1st)
+    # Challenge 2.1 — Dust storm
     (display: "Challenge Crew Display")
 
-    The team combines every discipline to reconstruct the damaged station plan.
+    While you are attaching the last section of exterior insulation for the **−90°C** night, a giant dust storm arrives and blows you off the roof. Roll the d6 to see what happens.
 
-    <div class="roll-card">**Team check**<br>d20 **$roll** + research **$modifier** = **$total** against DC **$dc**</div>
+    <div class="roll-card"><strong>d6 result: $roll</strong></div>
 
-    (if: $total >= $dc)[
-      (set: $discoveries to $discoveries + 1)
-      <span class="success">The map identifies a greenhouse and a deeper chamber with no recorded purpose.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "Solving the map restores confidence. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
+    (if: $roll is 1)[
+      (set: $damage to 5)(display: "Apply Lead Damage")
+      <span class="danger">You become lost in the dust and cannot find your way back. Damage: 5 Stardust.</span>
+    ]
+    (else-if: $roll <= 3)[
+      (set: $damage to 3)(display: "Apply Lead Damage")
+      <span class="danger">You fall unconscious until the medic finds you. Damage: 3 Stardust.</span>
+    ]
+    (else-if: $roll <= 5)[
+      (set: $damage to 1)(display: "Apply Lead Damage")
+      <span class="warning">You break your leg and cannot stand without help. Damage: 1 Stardust.</span>
     ]
     (else:)[
-      <span class="warning">The map remains incomplete, but its greenhouse marker is readable.</span>
-      (set: $teamStardustChange to -1, $teamStardustReason to "The long, unsuccessful analysis is draining. Every participating astronaut loses 1 Stardust.")
-      (display: "Apply Team Stardust")
+      <span class="success">You graze your knee and say, “Ouch!” Damage: 0 Stardust.</span>
     ]
 
     **Challenge depth 2 of 2 — no deeper challenge links.**
 
-    (set: $stardustReturn to "Midday Mission", $stardustFollowup to "")
-    (if: false)[[Map return->Midday Mission]]
-    (display: "Stardust Input")
+    [[Return to the station-protection mission->Midday Mission]]
   TWINE
   [11, "Evening Mission", "700,625", <<~'TWINE'],
     (set: $stage to "Evening")
@@ -369,36 +400,32 @@ passages = [
 
     An alarm calls the entire team to the greenhouse. Unknown growth is spreading into the ventilation system.
 
-    (if: not $eveningFirstComplete)[<div class="action-link">(link: "Choose a crew for organism containment")[(set: $challengeDestination to "Evening Challenge", $challengeTitle to "Contain the growth")(go-to: "Select Challenge Crew")]</div>]
+    (if: not $eveningFirstComplete)[<div class="action-link">(link: "Choose a crew for organism containment")[(set: $challengeDestination to "Evening Challenge", $challengeTitle to "Contain the growth", $challengeMission to "Evening")(go-to: "Select Challenge Crew")]</div>]
     (if: false)[[Map route: organism containment->Evening Challenge]]
-    (if: not $eveningSecondComplete)[<div class="action-link">(link: "Choose a crew to decontaminate the vents")[(set: $challengeDestination to "Evening Second Challenge", $challengeTitle to "Decontaminate the ventilation system")(go-to: "Select Challenge Crew")]</div>]
+    (if: not $eveningSecondComplete)[<div class="action-link">(link: "Choose a crew to decontaminate the vents")[(set: $challengeDestination to "Evening Second Challenge", $challengeTitle to "Decontaminate the ventilation system", $challengeMission to "Evening")(go-to: "Select Challenge Crew")]</div>]
     (if: false)[[Map route: decontaminate vents->Evening Second Challenge]]
+    (if: $eveningComplete and not $eveningRewardGranted)[(set: $rewardMission to "Evening")(display: "Apply Mission Stardust Reward")]
     (if: $eveningComplete)[
       <div class="quest-card"><span class="success">Evening mission complete.</span> The team has returned to the mission hub.</div>
       [[Advance in time to the night mission->Night Mission]]
     ]
   TWINE
   [12, "Evening Challenge", "825,625", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to (max:1,$challengeCrewCount), $dc to 12)
+    (display: "Calculate Team Stardust")
+    (set: $roll to (random:1,20), $dc to 12)
     (set: $total to $roll + $modifier, $eveningFirstComplete to true)
     # Evening challenge — Contain the growth
     (display: "Challenge Crew Display")
 
     Every astronaut contributes: sealing vents, monitoring health, analyzing the organism, and controlling the greenhouse systems.
 
-    <div class="roll-card">**Team check**<br>d20 **$roll** + teamwork **$modifier** = **$total** against DC **$dc**</div>
-
     (if: $total >= $dc)[
       (set: $discoveries to $discoveries + 1)
       <span class="success">The growth is contained and a viable sample is secured.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "Safe containment strengthens the crew. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
     ]
     (else:)[
       (set: $supplies to (max:0,$supplies - 1), $morale to (max:0,$morale - 1))
       <span class="danger">The greenhouse is sealed permanently and the team loses supplies.</span>
-      (set: $teamStardustChange to -2, $teamStardustReason to "Exposure during the failed containment harms the crew. Every participating astronaut loses 2 Stardust.")
-      (display: "Apply Team Stardust")
     ]
 
     **Challenge depth 1 of 2**
@@ -409,25 +436,20 @@ passages = [
     (display: "Stardust Input")
   TWINE
   [13, "Evening Follow-up", "950,625", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to $challengeCrewCount + $discoveries, $dc to 14)
+    (display: "Calculate Team Stardust")
+    (set: $roll to (random:1,20), $dc to 14)
     (set: $total to $roll + $modifier, $eveningDeepComplete to true)
     # Evening follow-up — Analyze the organism
     (display: "Challenge Crew Display")
 
     The full team conducts a rapid laboratory analysis before the sample degrades.
 
-    <div class="roll-card">**Team check**<br>d20 **$roll** + research **$modifier** = **$total** against DC **$dc**</div>
-
     (if: $total >= $dc)[
       (set: $discoveries to $discoveries + 1)
       <span class="success">The organism is neither terrestrial nor Martian. It responds to the station's hidden signal.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "The breakthrough energizes the team. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
     ]
     (else:)[
       <span class="warning">The sample degrades before its origin can be confirmed.</span>
-      (set: $teamStardustChange to -1, $teamStardustReason to "The lost sample leaves the crew depleted. Every participating astronaut loses 1 Stardust.")
-      (display: "Apply Team Stardust")
     ]
 
     **Challenge depth 2 of 2 — no deeper challenge links.**
@@ -446,36 +468,32 @@ passages = [
 
     Before anyone can sleep, the entire team must secure the habitat and investigate a repeating vibration beneath the floor.
 
-    (if: not $nightFirstComplete)[<div class="action-link">(link: "Choose a crew to secure the habitat")[(set: $challengeDestination to "Night Challenge", $challengeTitle to "Secure the habitat")(go-to: "Select Challenge Crew")]</div>]
+    (if: not $nightFirstComplete)[<div class="action-link">(link: "Choose a crew to secure the habitat")[(set: $challengeDestination to "Night Challenge", $challengeTitle to "Secure the habitat", $challengeMission to "Night")(go-to: "Select Challenge Crew")]</div>]
     (if: false)[[Map route: secure habitat->Night Challenge]]
-    (if: not $nightSecondComplete)[<div class="action-link">(link: "Choose a crew for the perimeter patrol")[(set: $challengeDestination to "Night Second Challenge", $challengeTitle to "Patrol the station perimeter")(go-to: "Select Challenge Crew")]</div>]
+    (if: not $nightSecondComplete)[<div class="action-link">(link: "Choose a crew for the perimeter patrol")[(set: $challengeDestination to "Night Second Challenge", $challengeTitle to "Patrol the station perimeter", $challengeMission to "Night")(go-to: "Select Challenge Crew")]</div>]
     (if: false)[[Map route: perimeter patrol->Night Second Challenge]]
+    (if: $nightComplete and not $nightRewardGranted)[(set: $rewardMission to "Night")(display: "Apply Mission Stardust Reward")]
     (if: $nightComplete)[
       <div class="quest-card"><span class="success">Night mission complete.</span> The team has returned to the mission hub.</div>
       [[End Day 1->Day 1 Summary]]
     ]
   TWINE
   [15, "Night Challenge", "1200,625", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to (max:1,$challengeCrewCount), $dc to 12)
+    (display: "Calculate Team Stardust")
+    (set: $roll to (random:1,20), $dc to 12)
     (set: $total to $roll + $modifier, $nightFirstComplete to true)
     # Night challenge — Secure the habitat
     (display: "Challenge Crew Display")
 
     The astronauts check seals, medical status, sensors, and power reserves as one team.
 
-    <div class="roll-card">**Team check**<br>d20 **$roll** + teamwork **$modifier** = **$total** against DC **$dc**</div>
-
     (if: $total >= $dc)[
       (set: $morale to $morale + 1)
       <span class="success">The habitat is secure and the crew gains morale.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "A secure habitat lets the team recover. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
     ]
     (else:)[
       (set: $supplies to (max:0,$supplies - 1))
       <span class="warning">A failing seal consumes one supply unit before it is stabilized.</span>
-      (set: $teamStardustChange to -1, $teamStardustReason to "The emergency seal repair exhausts the crew. Every participating astronaut loses 1 Stardust.")
-      (display: "Apply Team Stardust")
     ]
 
     **Challenge depth 1 of 2**
@@ -486,26 +504,21 @@ passages = [
     (display: "Stardust Input")
   TWINE
   [16, "Night Follow-up", "1325,625", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to $challengeCrewCount + $discoveries, $dc to 15)
+    (display: "Calculate Team Stardust")
+    (set: $roll to (random:1,20), $dc to 15)
     (set: $total to $roll + $modifier, $nightDeepComplete to true)
     # Night follow-up — The signal below
     (display: "Challenge Crew Display")
 
     The team descends one level and listens as the vibration resolves into a repeating coded signal.
 
-    <div class="roll-card">**Team check**<br>d20 **$roll** + accumulated knowledge **$modifier** = **$total** against DC **$dc**</div>
-
     (if: $total >= $dc)[
       (set: $discoveries to $discoveries + 2)
       <span class="success">The signal is a response. Something below knows the astronauts have arrived.</span>
-      (set: $teamStardustChange to 2, $teamStardustReason to "The extraordinary discovery fills the crew with resolve. Every participating astronaut gains 2 Stardust.")
-      (display: "Apply Team Stardust")
     ]
     (else:)[
       (set: $morale to (max:0,$morale - 1))
       <span class="danger">The signal stops when the team approaches. Morale falls.</span>
-      (set: $teamStardustChange to -2, $teamStardustReason to "The unsettling encounter shakes the crew. Every participating astronaut loses 2 Stardust.")
-      (display: "Apply Team Stardust")
     ]
 
     **Challenge depth 2 of 2 — no deeper challenge links.**
@@ -555,28 +568,59 @@ passages = [
     ]
   TWINE
   [20, "Stardust Input", "1325,750", <<~'TWINE'],
-    (set: $d6Input to "")
+    (set: $d6Input to "", $followupD6Input to "")
     (set: $stardustTargetRole to $challengeCrewRoles's 1st)
     <div class="stardust-input">
-    **Resolve Stardust with your physical d6**
+    **Resolve the challenge**
+
+    (if: $usesD6Check)[
+      <div class="roll-card"><strong>Challenge result</strong><span class="roll-equation">d6 roll: <strong>$roll</strong> — 1–3 is a setback, 4–5 is a success, and 6 is an exceptional success.</span></div>
+    ]
+    (else:)[
+      <div class="roll-card"><strong>Challenge result</strong><span class="roll-equation">d20 <strong>$roll</strong> + average participating Stardust <strong>$modifier</strong> = <strong>$total</strong> against DC <strong>$dc</strong></span></div>
+    ]
+
+    **Stardust used for this check**
+    <div class="stardust-roster">
+      (if: $sendEngineer)[<span class="stardust-member">(verbatim-print: $engineerName): **$challengeEngineerStardust**</span>]
+      (if: $sendResearcher)[<span class="stardust-member">(verbatim-print: $researcherName): **$challengeResearcherStardust**</span>]
+      (if: $sendMedic)[<span class="stardust-member">(verbatim-print: $medicName): **$challengeMedicStardust**</span>]
+      (if: $sendProgramer)[<span class="stardust-member">(verbatim-print: $programerName): **$challengeProgramerStardust**</span>]
+      (if: $sendModeler)[<span class="stardust-member">(verbatim-print: $modelerName): **$challengeModelerStardust**</span>]
+      (if: $sendElectrician)[<span class="stardust-member">(verbatim-print: $electricianName): **$challengeElectricianStardust**</span>]
+      (if: $sendPhysicist)[<span class="stardust-member">(verbatim-print: $physicistName): **$challengePhysicistStardust**</span>]
+    </div>
+
+    **Step 1 — Apply the challenge's Stardust loss**
 
     Choose an affected participating astronaut: (cycling-link: bind $stardustTargetRole, ...$challengeCrewRoles)
 
     Roll a d6 in the real world and enter the result: (input: bind $d6Input, "=XX=", "1–6")
 
+    **Challenge loss:** 1 = −5 Stardust · 2 = −3 · 3–4 = −1 · 5–6 = no loss
+
     (if: $stardustFollowup is not "")[
-      <span class="warning">A roll of 1–3 requires the follow-up challenge. A roll of 4–6 returns the crew to the mission.</span>
+      **Step 2 — Determine whether the follow-up challenge runs**
+
+      Roll the d6 again and enter the separate follow-up result: (input: bind $followupD6Input, "=XX=", "1–6")
+
+      <span class="warning">This second roll does not change Stardust. A result of 1–3 requires the follow-up; 4–6 returns the crew to the mission.</span>
     ]
 
-    (link: "Apply roll and continue")[
-      (if: (a: "1", "2", "3", "4", "5", "6") contains $d6Input)[
+    (link: "Apply rolls and continue")[
+      (if: not ((a: "1", "2", "3", "4", "5", "6") contains $d6Input))[
+        (alert: "Enter a Stardust-loss roll from 1 to 6.")
+      ]
+      (else-if: $stardustFollowup is not "" and not ((a: "1", "2", "3", "4", "5", "6") contains $followupD6Input))[
+        (alert: "Enter the separate follow-up roll from 1 to 6.")
+      ]
+      (else:)[
         (set: $d6Roll to (num: $d6Input))
-        (if: $d6Roll is 1)[(set: $stardustChange to -3)]
-        (else-if: $d6Roll is 2)[(set: $stardustChange to -2)]
-        (else-if: $d6Roll is 3)[(set: $stardustChange to -1)]
-        (else-if: $d6Roll is 4)[(set: $stardustChange to 1)]
-        (else-if: $d6Roll is 5)[(set: $stardustChange to 2)]
-        (else:)[(set: $stardustChange to 3)]
+        (if: $stardustFollowup is not "")[(set: $followupD6Roll to (num: $followupD6Input))]
+        (if: $d6Roll is 1)[(set: $stardustChange to -5)]
+        (else-if: $d6Roll is 2)[(set: $stardustChange to -3)]
+        (else-if: $d6Roll <= 4)[(set: $stardustChange to -1)]
+        (else:)[(set: $stardustChange to 0)]
 
         (if: $stardustTargetRole is "Engineer")[(set: $engineerStardust to (min: $stardustMax, (max: 0, $engineerStardust + $stardustChange)))]
         (else-if: $stardustTargetRole is "Researcher")[(set: $researcherStardust to (min: $stardustMax, (max: 0, $researcherStardust + $stardustChange)))]
@@ -585,107 +629,135 @@ passages = [
         (else-if: $stardustTargetRole is "Modeler")[(set: $modelerStardust to (min: $stardustMax, (max: 0, $modelerStardust + $stardustChange)))]
         (else-if: $stardustTargetRole is "Electrician")[(set: $electricianStardust to (min: $stardustMax, (max: 0, $electricianStardust + $stardustChange)))]
         (else:)[(set: $physicistStardust to (min: $stardustMax, (max: 0, $physicistStardust + $stardustChange)))]
-        (if: $stardustFollowup is not "" and $d6Roll <= 3)[
+        (if: $stardustFollowup is not "" and $followupD6Roll <= 3)[
           (go-to: $stardustFollowup)
         ]
         (else:)[
           (go-to: $stardustReturn)
         ]
       ]
-      (else:)[(alert: "Enter a whole number from 1 to 6.")]
     ]
     </div>
   TWINE
-  [21, "Apply Team Stardust", "1450,750", <<~'TWINE'],
-    (if: $sendEngineer)[(set: $engineerStardust to (min: $stardustMax, (max: 0, $engineerStardust + $teamStardustChange)))]
-    (if: $sendResearcher)[(set: $researcherStardust to (min: $stardustMax, (max: 0, $researcherStardust + $teamStardustChange)))]
-    (if: $sendMedic)[(set: $medicStardust to (min: $stardustMax, (max: 0, $medicStardust + $teamStardustChange)))]
-    (if: $sendProgramer)[(set: $programerStardust to (min: $stardustMax, (max: 0, $programerStardust + $teamStardustChange)))]
-    (if: $sendModeler)[(set: $modelerStardust to (min: $stardustMax, (max: 0, $modelerStardust + $teamStardustChange)))]
-    (if: $sendElectrician)[(set: $electricianStardust to (min: $stardustMax, (max: 0, $electricianStardust + $teamStardustChange)))]
-    (if: $sendPhysicist)[(set: $physicistStardust to (min: $stardustMax, (max: 0, $physicistStardust + $teamStardustChange)))]
+  [21, "Apply Mission Stardust Reward", "1450,750", <<~'TWINE'],
+    (if: $rewardMission is "Morning")[
+      (if: $morningEngineerParticipated)[(set: $engineerStardust to (min: $stardustMax, $engineerStardust + 2))]
+      (if: $morningResearcherParticipated)[(set: $researcherStardust to (min: $stardustMax, $researcherStardust + 2))]
+      (if: $morningMedicParticipated)[(set: $medicStardust to (min: $stardustMax, $medicStardust + 2))]
+      (if: $morningProgramerParticipated)[(set: $programerStardust to (min: $stardustMax, $programerStardust + 2))]
+      (if: $morningModelerParticipated)[(set: $modelerStardust to (min: $stardustMax, $modelerStardust + 2))]
+      (if: $morningElectricianParticipated)[(set: $electricianStardust to (min: $stardustMax, $electricianStardust + 2))]
+      (if: $morningPhysicistParticipated)[(set: $physicistStardust to (min: $stardustMax, $physicistStardust + 2))]
+      (set: $morningRewardGranted to true)
+    ]
+    (else-if: $rewardMission is "Midday")[
+      (if: $middayEngineerParticipated)[(set: $engineerStardust to (min: $stardustMax, $engineerStardust + 2))]
+      (if: $middayResearcherParticipated)[(set: $researcherStardust to (min: $stardustMax, $researcherStardust + 2))]
+      (if: $middayMedicParticipated)[(set: $medicStardust to (min: $stardustMax, $medicStardust + 2))]
+      (if: $middayProgramerParticipated)[(set: $programerStardust to (min: $stardustMax, $programerStardust + 2))]
+      (if: $middayModelerParticipated)[(set: $modelerStardust to (min: $stardustMax, $modelerStardust + 2))]
+      (if: $middayElectricianParticipated)[(set: $electricianStardust to (min: $stardustMax, $electricianStardust + 2))]
+      (if: $middayPhysicistParticipated)[(set: $physicistStardust to (min: $stardustMax, $physicistStardust + 2))]
+      (set: $middayRewardGranted to true)
+    ]
+    (else-if: $rewardMission is "Evening")[
+      (if: $eveningEngineerParticipated)[(set: $engineerStardust to (min: $stardustMax, $engineerStardust + 2))]
+      (if: $eveningResearcherParticipated)[(set: $researcherStardust to (min: $stardustMax, $researcherStardust + 2))]
+      (if: $eveningMedicParticipated)[(set: $medicStardust to (min: $stardustMax, $medicStardust + 2))]
+      (if: $eveningProgramerParticipated)[(set: $programerStardust to (min: $stardustMax, $programerStardust + 2))]
+      (if: $eveningModelerParticipated)[(set: $modelerStardust to (min: $stardustMax, $modelerStardust + 2))]
+      (if: $eveningElectricianParticipated)[(set: $electricianStardust to (min: $stardustMax, $electricianStardust + 2))]
+      (if: $eveningPhysicistParticipated)[(set: $physicistStardust to (min: $stardustMax, $physicistStardust + 2))]
+      (set: $eveningRewardGranted to true)
+    ]
+    (else:)[
+      (if: $nightEngineerParticipated)[(set: $engineerStardust to (min: $stardustMax, $engineerStardust + 2))]
+      (if: $nightResearcherParticipated)[(set: $researcherStardust to (min: $stardustMax, $researcherStardust + 2))]
+      (if: $nightMedicParticipated)[(set: $medicStardust to (min: $stardustMax, $medicStardust + 2))]
+      (if: $nightProgramerParticipated)[(set: $programerStardust to (min: $stardustMax, $programerStardust + 2))]
+      (if: $nightModelerParticipated)[(set: $modelerStardust to (min: $stardustMax, $modelerStardust + 2))]
+      (if: $nightElectricianParticipated)[(set: $electricianStardust to (min: $stardustMax, $electricianStardust + 2))]
+      (if: $nightPhysicistParticipated)[(set: $physicistStardust to (min: $stardustMax, $physicistStardust + 2))]
+      (set: $nightRewardGranted to true)
+    ]
 
-    <div class="quest-card">
-    (if: $teamStardustChange > 0)[<span class="success">✦ (print: $teamStardustReason)</span>]
-    (else:)[<span class="danger">✦ (print: $teamStardustReason)</span>]
-    </div>
+    <div class="quest-card"><span class="success">✦ Mission complete: every astronaut who participated in this mission gains 2 Stardust.</span></div>
   TWINE
   [22, "Morning Second Challenge", "700,875", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to (max:1,$challengeCrewCount), $dc to 13)
-    (set: $total to $roll + $modifier, $morningSecondComplete to true)
-    # Morning challenge — Repair the water recycler
+    (set: $roll to (random:1,6), $morningSecondComplete to true)
+    # Challenge 1.2 — Fungal pathogen
     (display: "Challenge Crew Display")
 
-    The chosen astronauts enter the frozen utility bay to restart the station's damaged water recycler.
+    The soil brought from Earth contains a fungal pathogen that has infected the crops. Roll the d6 to discover what happens.
 
-    <div class="roll-card">**Crew check**<br>d20 **$roll** + participating crew **$modifier** = **$total** against DC **$dc**</div>
+    <div class="roll-card"><strong>d6 result: $roll</strong></div>
 
-    (if: $total >= $dc)[
-      (set: $supplies to $supplies + 1)
-      <span class="success">Clean water begins flowing and the station gains one supply.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "The successful repair restores the participants. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
+    (if: $roll is 1)[
+      (set: $supplies to (max:0,$supplies - 4))
+      (if: $takeEngineer)[(set: $engineerStardust to (max:0,$engineerStardust - 3))](if: $takeResearcher)[(set: $researcherStardust to (max:0,$researcherStardust - 3))](if: $takeMedic)[(set: $medicStardust to (max:0,$medicStardust - 3))](if: $takeProgramer)[(set: $programerStardust to (max:0,$programerStardust - 3))](if: $takeModeler)[(set: $modelerStardust to (max:0,$modelerStardust - 3))](if: $takeElectrician)[(set: $electricianStardust to (max:0,$electricianStardust - 3))](if: $takePhysicist)[(set: $physicistStardust to (max:0,$physicistStardust - 3))]
+      <span class="danger">All the plants die. There is no fresh food and no seed stock left to grow more. Every team member loses 3 Stardust.</span>
+    ]
+    (else-if: $roll <= 3)[
+      (set: $supplies to (max:0,$supplies - 2))
+      (if: $takeEngineer)[(set: $engineerStardust to (max:0,$engineerStardust - 2))](if: $takeResearcher)[(set: $researcherStardust to (max:0,$researcherStardust - 2))](if: $takeMedic)[(set: $medicStardust to (max:0,$medicStardust - 2))](if: $takeProgramer)[(set: $programerStardust to (max:0,$programerStardust - 2))](if: $takeModeler)[(set: $modelerStardust to (max:0,$modelerStardust - 2))](if: $takeElectrician)[(set: $electricianStardust to (max:0,$electricianStardust - 2))](if: $takePhysicist)[(set: $physicistStardust to (max:0,$physicistStardust - 2))]
+      <span class="danger">All the plants die, so there is no fresh food for now. Luckily, seeds stored in a secure room can restart the crop system, although fresh food is weeks away. Every team member loses 2 Stardust.</span>
+    ]
+    (else-if: $roll <= 5)[
+      (set: $supplies to (max:0,$supplies - 1), $leadRole to $challengeCrewRoles's 1st)
+      (if: $leadRole is "Engineer")[(set: $engineerStardust to (max:0,$engineerStardust - 1))](else-if: $leadRole is "Researcher")[(set: $researcherStardust to (max:0,$researcherStardust - 1))](else-if: $leadRole is "Medic")[(set: $medicStardust to (max:0,$medicStardust - 1))](else-if: $leadRole is "Programer")[(set: $programerStardust to (max:0,$programerStardust - 1))](else-if: $leadRole is "Modeler")[(set: $modelerStardust to (max:0,$modelerStardust - 1))](else-if: $leadRole is "Electrician")[(set: $electricianStardust to (max:0,$electricianStardust - 1))](else:)[(set: $physicistStardust to (max:0,$physicistStardust - 1))]
+      <span class="warning">The crew finds a fungicide before the infection kills every plant. Half the crop is lost, but it can regrow and still provides a smaller amount of fresh food. The lead astronaut loses 1 Stardust.</span>
     ]
     (else:)[
-      (set: $supplies to (max:0,$supplies - 1))
-      <span class="warning">The recycler works, but a coolant leak costs one supply.</span>
-      (set: $teamStardustChange to -1, $teamStardustReason to "The coolant leak exhausts the participants. Every participating astronaut loses 1 Stardust.")
-      (display: "Apply Team Stardust")
+      <span class="success">The crop is resistant to the fungus, and less than 10% of the plants are damaged. No Stardust is lost.</span>
     ]
 
     **Challenge depth 1 of 2 — no deeper branch.**
-    (set: $stardustReturn to "Morning Mission", $stardustFollowup to "")
-    (if: false)[[Map return->Morning Mission]]
-    (display: "Stardust Input")
+    [[Return to the growing-food mission->Morning Mission]]
   TWINE
   [23, "Midday Second Challenge", "825,875", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to (max:1,$challengeCrewCount), $dc to 14)
-    (set: $total to $roll + $modifier, $middaySecondComplete to true)
-    # Midday challenge — Inspect the sealed laboratory
+    (set: $roll to (random:1,6), $middaySecondComplete to true, $leadRole to $challengeCrewRoles's 1st)
+    # Challenge 2.2 — Solar flare
     (display: "Challenge Crew Display")
 
-    The chosen astronauts breach the laboratory carefully and catalogue its unstable equipment.
+    Solar flares can occur every few days, producing dangerous radiation for around an hour. Everyone must remain inside—but you are caught outdoors when the warning sounds. Roll the d6 to see what happens.
 
-    <div class="roll-card">**Crew check**<br>d20 **$roll** + participating crew **$modifier** = **$total** against DC **$dc**</div>
+    <div class="roll-card"><strong>d6 result: $roll</strong></div>
 
-    (if: $total >= $dc)[
-      (set: $discoveries to $discoveries + 1)
-      <span class="success">The team recovers an intact experiment log.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "The recovered log encourages the participants. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
+    (if: $roll is 1)[
+      (set: $damage to 5)(display: "Apply Lead Damage")
+      <span class="danger">You develop radiation sickness, and nobody finds you until the next day. Damage: 5 Stardust.</span>
+    ]
+    (else-if: $roll <= 3)[
+      (set: $damage to 3)(display: "Apply Lead Damage")
+      <span class="danger">You are exposed to radiation, but the medic reaches you and provides treatment. Damage: 3 Stardust.</span>
+    ]
+    (else-if: $roll <= 5)[
+      (set: $damage to 1)(display: "Apply Lead Damage")
+      <span class="warning">You find your radiation suit in time but still become slightly ill. Damage: 1 Stardust.</span>
     ]
     (else:)[
-      <span class="warning">A chemical alarm forces a hurried retreat after the inspection.</span>
-      (set: $teamStardustChange to -1, $teamStardustReason to "The chemical exposure weakens the participants. Every participating astronaut loses 1 Stardust.")
-      (display: "Apply Team Stardust")
+      <span class="success">You return to the station before dangerous radiation reaches you. Damage: 0 Stardust.</span>
     ]
 
     **Challenge depth 1 of 2 — no deeper branch.**
-    (set: $stardustReturn to "Midday Mission", $stardustFollowup to "")
-    (if: false)[[Map return->Midday Mission]]
-    (display: "Stardust Input")
+    [[Return to the station-protection mission->Midday Mission]]
   TWINE
   [24, "Evening Second Challenge", "950,875", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to (max:1,$challengeCrewCount), $dc to 13)
+    (display: "Calculate Team Stardust")
+    (set: $roll to (random:1,20), $dc to 13)
     (set: $total to $roll + $modifier, $eveningSecondComplete to true)
     # Evening challenge — Decontaminate the vents
     (display: "Challenge Crew Display")
 
     The chosen astronauts crawl through the ventilation network, removing spores before they reach the habitat.
 
-    <div class="roll-card">**Crew check**<br>d20 **$roll** + participating crew **$modifier** = **$total** against DC **$dc**</div>
-
     (if: $total >= $dc)[
       (set: $morale to $morale + 1)
       <span class="success">The vents are clean and the habitat is protected.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "Completing the decontamination strengthens the participants. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
     ]
     (else:)[
       (set: $supplies to (max:0,$supplies - 1))
       <span class="danger">The vents are sealed, but contaminated equipment must be discarded.</span>
-      (set: $teamStardustChange to -2, $teamStardustReason to "The contamination harms the participants. Every participating astronaut loses 2 Stardust.")
-      (display: "Apply Team Stardust")
     ]
 
     **Challenge depth 1 of 2 — no deeper branch.**
@@ -694,26 +766,21 @@ passages = [
     (display: "Stardust Input")
   TWINE
   [25, "Night Second Challenge", "1075,875", <<~'TWINE'],
-    (set: $roll to (random:1,20), $modifier to (max:1,$challengeCrewCount), $dc to 14)
+    (display: "Calculate Team Stardust")
+    (set: $roll to (random:1,20), $dc to 14)
     (set: $total to $roll + $modifier, $nightSecondComplete to true)
     # Night challenge — Patrol the station perimeter
     (display: "Challenge Crew Display")
 
     The chosen astronauts cross the dark Martian surface to inspect the station's exterior sensors and airlocks.
 
-    <div class="roll-card">**Crew check**<br>d20 **$roll** + participating crew **$modifier** = **$total** against DC **$dc**</div>
-
     (if: $total >= $dc)[
       (set: $stationPower to $stationPower + 1)
       <span class="success">The patrol restores an exterior sensor array and finds no breach.</span>
-      (set: $teamStardustChange to 1, $teamStardustReason to "The safe patrol reassures the participants. Every participating astronaut gains 1 Stardust.")
-      (display: "Apply Team Stardust")
     ]
     (else:)[
       (set: $morale to (max:0,$morale - 1))
       <span class="danger">A dust surge separates the patrol briefly before they regain the airlock.</span>
-      (set: $teamStardustChange to -2, $teamStardustReason to "The dangerous dust surge harms the participants. Every participating astronaut loses 2 Stardust.")
-      (display: "Apply Team Stardust")
     ]
 
     **Challenge depth 1 of 2 — no deeper branch.**
@@ -728,7 +795,7 @@ passages = [
 
     **Challenge:** (verbatim-print: $challengeTitle)
 
-    Select any subset of the available mission roster. A larger group provides a larger teamwork modifier, but only participating astronauts receive this challenge's Stardust effects.
+    Select any subset of the available mission roster. The challenge modifier is the participating astronauts' average current Stardust, so the score reflects how well that crew is doing individually. Only participants receive the challenge's Stardust effects.
 
     (if: $takeEngineer)[(checkbox: bind $sendEngineer, "Engineer") — (verbatim-print: $engineerName)<br>]
     (if: $takeResearcher)[(checkbox: bind $sendResearcher, "Researcher") — (verbatim-print: $researcherName)<br>]
@@ -748,23 +815,97 @@ passages = [
       (if: $sendElectrician)[(set: $challengeCrewCount to $challengeCrewCount + 1, $challengeCrewNames to $challengeCrewNames + (a:$electricianName), $challengeCrewRoles to $challengeCrewRoles + (a:"Electrician"))]
       (if: $sendPhysicist)[(set: $challengeCrewCount to $challengeCrewCount + 1, $challengeCrewNames to $challengeCrewNames + (a:$physicistName), $challengeCrewRoles to $challengeCrewRoles + (a:"Astrophysicist"))]
 
-      (if: $challengeCrewCount > 0)[(go-to: $challengeDestination)]
+      (if: $challengeCrewCount > 0)[
+        (display: "Record Mission Participants")
+        (go-to: $challengeDestination)
+      ]
       (else:)[(alert: "Select at least one astronaut for this challenge.")]
     ]
   TWINE
   [27, "Challenge Crew Display", "1325,875", <<~'TWINE'],
-    <div class="quest-card"><strong>PARTICIPATING CREW:</strong>(for: each _challengeName, ...$challengeCrewNames)[<span>(verbatim-print: _challengeName)</span>]</div>
+    <div class="quest-card"><strong>PARTICIPATING CREW:</strong>(for: each _challengeName, ...$challengeCrewNames)[<span class="challenge-name">(verbatim-print: _challengeName)</span>]</div>
+  TWINE
+  [28, "Calculate Team Stardust", "1450,875", <<~'TWINE'],
+    (set: $usesD6Check to false)
+    (set: $challengeEngineerStardust to $engineerStardust, $challengeResearcherStardust to $researcherStardust)
+    (set: $challengeMedicStardust to $medicStardust, $challengeProgramerStardust to $programerStardust)
+    (set: $challengeModelerStardust to $modelerStardust, $challengeElectricianStardust to $electricianStardust)
+    (set: $challengePhysicistStardust to $physicistStardust)
+    (set: $challengeStardustTotal to 0)
+    (if: $sendEngineer)[(set: $challengeStardustTotal to $challengeStardustTotal + $challengeEngineerStardust)]
+    (if: $sendResearcher)[(set: $challengeStardustTotal to $challengeStardustTotal + $challengeResearcherStardust)]
+    (if: $sendMedic)[(set: $challengeStardustTotal to $challengeStardustTotal + $challengeMedicStardust)]
+    (if: $sendProgramer)[(set: $challengeStardustTotal to $challengeStardustTotal + $challengeProgramerStardust)]
+    (if: $sendModeler)[(set: $challengeStardustTotal to $challengeStardustTotal + $challengeModelerStardust)]
+    (if: $sendElectrician)[(set: $challengeStardustTotal to $challengeStardustTotal + $challengeElectricianStardust)]
+    (if: $sendPhysicist)[(set: $challengeStardustTotal to $challengeStardustTotal + $challengePhysicistStardust)]
+    (if: $challengeCrewCount > 0)[(set: $modifier to (floor: $challengeStardustTotal / $challengeCrewCount))]
+    (else:)[(set: $modifier to 0)]
+  TWINE
+  [29, "Record Mission Participants", "1575,875", <<~'TWINE'],
+    (if: $challengeMission is "Morning")[
+      (if: $sendEngineer)[(set: $morningEngineerParticipated to true)]
+      (if: $sendResearcher)[(set: $morningResearcherParticipated to true)]
+      (if: $sendMedic)[(set: $morningMedicParticipated to true)]
+      (if: $sendProgramer)[(set: $morningProgramerParticipated to true)]
+      (if: $sendModeler)[(set: $morningModelerParticipated to true)]
+      (if: $sendElectrician)[(set: $morningElectricianParticipated to true)]
+      (if: $sendPhysicist)[(set: $morningPhysicistParticipated to true)]
+    ]
+    (else-if: $challengeMission is "Midday")[
+      (if: $sendEngineer)[(set: $middayEngineerParticipated to true)]
+      (if: $sendResearcher)[(set: $middayResearcherParticipated to true)]
+      (if: $sendMedic)[(set: $middayMedicParticipated to true)]
+      (if: $sendProgramer)[(set: $middayProgramerParticipated to true)]
+      (if: $sendModeler)[(set: $middayModelerParticipated to true)]
+      (if: $sendElectrician)[(set: $middayElectricianParticipated to true)]
+      (if: $sendPhysicist)[(set: $middayPhysicistParticipated to true)]
+    ]
+    (else-if: $challengeMission is "Evening")[
+      (if: $sendEngineer)[(set: $eveningEngineerParticipated to true)]
+      (if: $sendResearcher)[(set: $eveningResearcherParticipated to true)]
+      (if: $sendMedic)[(set: $eveningMedicParticipated to true)]
+      (if: $sendProgramer)[(set: $eveningProgramerParticipated to true)]
+      (if: $sendModeler)[(set: $eveningModelerParticipated to true)]
+      (if: $sendElectrician)[(set: $eveningElectricianParticipated to true)]
+      (if: $sendPhysicist)[(set: $eveningPhysicistParticipated to true)]
+    ]
+    (else:)[
+      (if: $sendEngineer)[(set: $nightEngineerParticipated to true)]
+      (if: $sendResearcher)[(set: $nightResearcherParticipated to true)]
+      (if: $sendMedic)[(set: $nightMedicParticipated to true)]
+      (if: $sendProgramer)[(set: $nightProgramerParticipated to true)]
+      (if: $sendModeler)[(set: $nightModelerParticipated to true)]
+      (if: $sendElectrician)[(set: $nightElectricianParticipated to true)]
+      (if: $sendPhysicist)[(set: $nightPhysicistParticipated to true)]
+    ]
+  TWINE
+  [30, "Apply Lead Damage", "1700,875", <<~'TWINE'],
+    (if: $leadRole is "Engineer")[(set: $engineerStardust to (max:0,$engineerStardust - $damage))]
+    (else-if: $leadRole is "Researcher")[(set: $researcherStardust to (max:0,$researcherStardust - $damage))]
+    (else-if: $leadRole is "Medic")[(set: $medicStardust to (max:0,$medicStardust - $damage))]
+    (else-if: $leadRole is "Programer")[(set: $programerStardust to (max:0,$programerStardust - $damage))]
+    (else-if: $leadRole is "Modeler")[(set: $modelerStardust to (max:0,$modelerStardust - $damage))]
+    (else-if: $leadRole is "Electrician")[(set: $electricianStardust to (max:0,$electricianStardust - $damage))]
+    (else:)[(set: $physicistStardust to (max:0,$physicistStardust - $damage))]
   TWINE
 ]
 
+html = File.read(story_path)
+existing_positions = html.scan(/<tw-passagedata\b([^>]*)>/).each_with_object({}) do |(attributes), positions|
+  name = CGI.unescapeHTML(attributes[/\bname="([^"]*)"/, 1].to_s)
+  position = attributes[/\bposition="([^"]*)"/, 1]
+  positions[name] = position if position
+end
+
 passage_html = passages.map do |pid, name, position, source, tags|
+  position = existing_positions.fetch(name, position)
   local_source = source.rstrip.gsub("../images/", "#{local_image_base}/")
   %(<tw-passagedata pid="#{pid}" name="#{CGI.escapeHTML(name)}" tags="#{CGI.escapeHTML(tags || "")}" position="#{position}" size="100,100">#{CGI.escapeHTML(local_source)}</tw-passagedata>)
 end.join
 
 storydata = %(<tw-storydata name="testing" startnode="1" creator="Twine" creator-version="2.12.1" format="Harlowe" format-version="3.3.9" ifid="10515CCC-3933-4FCB-9F91-389CAD821D22" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">#{css}</style><script role="script" id="twine-user-script" type="text/twine-javascript"></script>#{passage_html}</tw-storydata>)
 
-html = File.read(story_path)
 unless html.sub!(/<tw-storydata\b.*?<\/tw-storydata>/m, storydata)
   abort "Could not find the Twine story data block"
 end

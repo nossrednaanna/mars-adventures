@@ -5,7 +5,7 @@ This story uses a compact d20 system inspired by tabletop role-playing games whi
 ## Core check
 
 1. Roll `1d20`.
-2. Add the relevant attribute modifier.
+2. Add the participating crew's average current Stardust, rounded down. This is the team modifier; there is no separate teamwork tally.
 3. Meet or exceed the Difficulty Class (DC) to succeed.
 4. A natural 20 creates a critical success; a natural 1 creates a critical failure.
 
@@ -40,9 +40,9 @@ Each station day has four chronological missions:
 3. **Evening** — respond to a developing threat.
 4. **Night** — secure the habitat and investigate hidden activity.
 
-All selected astronauts belong to the mission roster, but each challenge may use any non-empty subset of that roster. Before a challenge begins, the player chooses its participating crew. Larger groups receive a larger teamwork modifier, while only participating astronauts receive that challenge's Stardust effects.
+All selected astronauts belong to the mission roster, but each challenge may use any non-empty subset of that roster. Before a challenge begins, the player chooses its participating crew. The challenge modifier is their average current Stardust, so it reflects individual crew condition rather than group size or a separate teamwork tally. Only participating astronauts receive that challenge's Stardust effects.
 
-Each mission is a hub with at least two independent primary challenges at depth 1. Both primary challenges must be completed before time can advance. After the first primary challenge, its physical d6 roll determines the route: 1–3 makes the linked follow-up challenge mandatory, while 4–6 returns directly to the mission. A depth-2 follow-up always returns to its originating mission and cannot open another challenge. This guarantees a maximum challenge depth of two while allowing multiple challenges per mission.
+Each mission is a hub with at least two independent primary challenges at depth 1. Both primary challenges must be completed before time can advance. The first primary challenge is resolved independently using its d20 plus average-Stardust check and its physical d6 Stardust-loss roll. A separate second d6 then determines the route: 1–3 makes the linked follow-up challenge mandatory, while 4–6 returns directly to the mission. This routing roll never changes Stardust. A depth-2 follow-up always returns to its originating mission and cannot open another challenge. This guarantees a maximum challenge depth of two while allowing multiple challenges per mission.
 
 Straightforward navigation uses Twine's `[[label->Passage]]` link notation. Challenge routes require Harlowe macros to prepare a destination and participating crew, so each dynamic route also has an `(if: false)[[map label->Passage]]` marker. These markers are invisible during play but make the corresponding arrows appear in Twine's story map.
 
@@ -51,8 +51,8 @@ At the end of the day, shared resources and individual stress determine which qu
 ## Resources
 
 - **Stardust** is each astronaut's persistent health and resilience score. Every selected astronaut begins with 6 Stardust, with a minimum of 0 and maximum of 12.
-- Mission and challenge outcomes automatically affect only the participating challenge crew. Ordinary successes give each participant +1 Stardust and ordinary failures give −1; especially dangerous or important outcomes may change it by 2.
-- After a challenge, choose one participating astronaut and roll a physical d6. Enter the real-world result in Twine: 1 = −3 Stardust, 2 = −2, 3 = −1, 4 = +1, 5 = +2, and 6 = +3.
+- Completing a mission gives +2 Stardust to every astronaut who participated in at least one of that mission's challenges. Participation is accumulated across the mission, and the completion reward is granted only once.
+- Challenges can only reduce Stardust. After a challenge, choose one participating astronaut and enter the physical d6 result: 1 = −5 Stardust, 2 = −3, 3–4 = −1, and 5–6 = no loss.
 - The crew status header appears as a single horizontal line at the top of every story passage after crew naming. On narrow screens it scrolls horizontally instead of wrapping onto extra lines.
 - **Resolve** is a scarce resource that can turn a failed scene into a costly success.
 - **Credits** are rewards and can later support equipment, repairs, or bribes.
